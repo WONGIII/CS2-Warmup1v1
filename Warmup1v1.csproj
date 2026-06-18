@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="CounterStrikeSharp.API">
+            <HintPath>..\tupian\counterstrikesharp-with-runtime-windows-1.0.369\addons\counterstrikesharp\api\CounterStrikeSharp.API.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+            <HintPath>..\tupian\counterstrikesharp-with-runtime-windows-1.0.369\addons\counterstrikesharp\api\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
+</Project>

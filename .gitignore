@@ -1,0 +1,5 @@
+bin/
+obj/
+counterstrikesharp-with-runtime-windows-1.0.369/
+.vs/
+*.user
