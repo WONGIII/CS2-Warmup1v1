@@ -51,7 +51,10 @@ public class ArenaManager
 
     private string GetArenasPath()
     {
-        return Path.Combine(_plugin.ModuleDirectory, _plugin.Config.ArenaConfigPath);
+        // Place arenas.json next to the plugin DLL
+        var dllLoc = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        var dllDir = Path.GetDirectoryName(dllLoc) ?? _plugin.ModuleDirectory;
+        return Path.Combine(dllDir, _plugin.Config.ArenaConfigPath);
     }
 
     public void LoadArenas()

@@ -32,7 +32,7 @@
 | 文件 | 路径 |
 |------|------|
 | 插件配置 | `addons/counterstrikesharp/configs/plugins/Warmup1v1/Warmup1v1.json` |
-| 竞技场配置 | `addons/counterstrikesharp/configs/plugins/Warmup1v1/arenas.json` |
+| 竞技场配置 | `addons/counterstrikesharp/plugins/Warmup1v1/arenas.json`（与dll同目录） |
 
 ## 配置竞技场
 
