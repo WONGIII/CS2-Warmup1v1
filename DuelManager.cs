@@ -110,12 +110,11 @@ public class DuelManager
         _plugin.ArenaManager.TeleportPlayerToArena(c, ai, true);
         _plugin.ArenaManager.TeleportPlayerToArena(t, ai, false);
 
-        c.InGameMoneyServices!.Account = 0;
-        t.InGameMoneyServices!.Account = 0;
+        if (c.InGameMoneyServices != null) c.InGameMoneyServices.Account = 0;
+        if (t.InGameMoneyServices != null) t.InGameMoneyServices.Account = 0;
 
         _plugin.WarmupManager.SetPlayerInDuel(c, true); _plugin.WarmupManager.SetPlayerInDuel(t, true);
 
-        // Give weapons + armor after delay (ensure teleport complete + TakesDamage set)
         int dlI = slot;
         _plugin.AddTimer(0.5f, () =>
         {
@@ -128,13 +127,11 @@ public class DuelManager
             if (p1.Pawn?.Value != null) p1.Pawn.Value.TakesDamage = true;
             if (p2.Pawn?.Value != null) p2.Pawn.Value.TakesDamage = true;
 
-            p1.GiveNamedItem("item_kevlar");
-            p2.GiveNamedItem("item_kevlar");
-
-            _plugin.WeaponManager.GiveDuelWeapons(p1, p2, dd.CurrentRound);
+            bool fa1 = _plugin.WeaponManager.NeedsFullArmor(dd.CurrentRound);
+            _plugin.WeaponManager.GiveDuelWeapons(p1, p2, dd.CurrentRound, fa1);
         });
 
-        Server.PrintToChatAll($"\u0001[ \u0004WANG\u0001 ] {c.PlayerName} vs {t.PlayerName} - 1v1开始!");
+        Server.PrintToChatAll($"\u0001[ \u0004WANG\u0001 ] {c.PlayerName} vs {t.PlayerName} - 1v1开始! [竞技场#{ai + 1}]");
         return true;
     }
 
@@ -190,23 +187,20 @@ public class DuelManager
         if (!p1.PawnIsAlive) p1.Respawn();
         if (!p2.PawnIsAlive) p2.Respawn();
 
-        // Swap spawn each round
         bool p1Spawn1 = !d.SpawnSwapped;
         _plugin.ArenaManager.TeleportPlayerToArena(p1, d.ArenaIndex, p1Spawn1);
         _plugin.ArenaManager.TeleportPlayerToArena(p2, d.ArenaIndex, !p1Spawn1);
 
-        p1.InGameMoneyServices!.Account = 0;
-        p2.InGameMoneyServices!.Account = 0;
+        if (p1.InGameMoneyServices != null) p1.InGameMoneyServices.Account = 0;
+        if (p2.InGameMoneyServices != null) p2.InGameMoneyServices.Account = 0;
 
         d.RoundEnded = false;
 
         if (p1.Pawn?.Value != null) { p1.Pawn.Value.Health = 100; p1.Pawn.Value.TakesDamage = true; }
         if (p2.Pawn?.Value != null) { p2.Pawn.Value.Health = 100; p2.Pawn.Value.TakesDamage = true; }
 
-        p1.GiveNamedItem("item_kevlar");
-        p2.GiveNamedItem("item_kevlar");
-
-        _plugin.WeaponManager.GiveDuelWeapons(p1, p2, d.CurrentRound);
+        bool fa2 = _plugin.WeaponManager.NeedsFullArmor(d.CurrentRound);
+        _plugin.WeaponManager.GiveDuelWeapons(p1, p2, d.CurrentRound, fa2);
 
         string wn = _plugin.WeaponManager.GetWeaponName(d.CurrentRound);
         p1.PrintToCenter($"R{d.CurrentRound} [{d.Score1}-{d.Score2}] {wn}");
@@ -250,6 +244,8 @@ public class DuelManager
         for (int i = 0; i < MaxDuels; i++) if (_duels[i].State == DuelState.Active) _duels[i].RoundEnded = false;
     }
 
+    // ===== Helpers =====
+
     private void SavePos(CCSPlayerController p)
     {
         var d = GetOrCreate(p);
@@ -264,7 +260,6 @@ public class DuelManager
 
         _plugin.WarmupManager.SetPlayerInDuel(p, false);
 
-        // Kill the player - they respawn fresh with correct money + knife + god mode
         p.CommitSuicide(false, true);
     }
 }

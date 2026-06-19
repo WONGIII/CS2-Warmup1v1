@@ -65,6 +65,7 @@ public class Warmup1v1Plugin : BasePlugin, IPluginConfig<Warmup1v1Config>
         RegisterEventHandler<EventPlayerSpawn>(OnPlayerSpawn);
         RegisterEventHandler<EventWarmupEnd>(OnWarmupEnd);
         RegisterEventHandler<EventWeaponFire>(OnWeaponFire);
+        RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt);
         RegisterEventHandler<EventFlashbangDetonate>(OnFlashbangDetonate);
         RegisterEventHandler<EventHegrenadeDetonate>(OnHegrenadeDetonate);
         RegisterEventHandler<EventSmokegrenadeDetonate>(OnSmokegrenadeDetonate);
@@ -187,6 +188,8 @@ public class Warmup1v1Plugin : BasePlugin, IPluginConfig<Warmup1v1Config>
         {
             ArenaManager.LoadArenas();
         }
+        // Ensure FFA is enabled during warmup (OnTick CheckWarmupState may miss the first detection)
+        WarmupManager.CheckWarmupState();
         return HookResult.Continue;
     }
 
@@ -392,6 +395,25 @@ public class Warmup1v1Plugin : BasePlugin, IPluginConfig<Warmup1v1Config>
                 _grenadeBounces.Remove(kv.Key);
             }
         });
+        return HookResult.Continue;
+    }
+
+    private HookResult OnPlayerHurt(EventPlayerHurt e, GameEventInfo info)
+    {
+        var attacker = e.Attacker;
+        var victim = e.Userid;
+
+        if (attacker == null || victim == null) return HookResult.Continue;
+        if (victim == attacker) return HookResult.Continue;
+
+        // If victim is in a duel but attacker is NOT, block the damage
+        if (DuelManager.IsPlayerInDuel(victim) && !DuelManager.IsPlayerInDuel(attacker))
+        {
+            e.DmgHealth = 0;
+            e.DmgArmor = 0;
+            return HookResult.Changed;
+        }
+
         return HookResult.Continue;
     }
 

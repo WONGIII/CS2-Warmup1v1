@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CSSharpUtils.Extensions;
 
 namespace Warmup1v1;
 
@@ -26,29 +27,34 @@ public class WeaponManager
     public string GetWeaponName(int round) => WeaponNames[(round - 1) % 13];
     public string GetWeaponClass(int round) => WeaponList[(round - 1) % 13];
 
-    public void GiveDuelWeapons(CCSPlayerController p1, CCSPlayerController p2, int round)
+    public bool NeedsFullArmor(int round)
     {
         string wc = GetWeaponClass(round);
-        GiveWeapon(p1, wc);
-        GiveWeapon(p2, wc);
+        return wc == "weapon_ak47" || wc == "weapon_m4a1_silencer" || wc == "weapon_awp";
     }
 
-    public void GiveWeapon(CCSPlayerController player, string weaponClass)
+    public void GiveDuelWeapons(CCSPlayerController p1, CCSPlayerController p2, int round, bool fullArmor)
+    {
+        string wc = GetWeaponClass(round);
+        GiveWeapon(p1, wc, fullArmor);
+        GiveWeapon(p2, wc, fullArmor);
+    }
+
+    public void GiveWeapon(CCSPlayerController player, string weaponClass, bool fullArmor)
     {
         if (!Warmup1v1Plugin.IsPlayerValid(player)) return;
 
-        // CS2 safe: RemoveWeapons removes all, then re-give knife + duel weapon
         player.RemoveWeapons();
 
         _plugin.AddTimer(0.1f, () =>
         {
             if (!Warmup1v1Plugin.IsPlayerValid(player)) return;
-            // Re-give knife
             player.GiveNamedItem("weapon_knife");
-            // Give duel weapon
             player.GiveNamedItem(weaponClass);
-            // Fill ammo
             FillAmmo(player, weaponClass);
+
+            // Set armor using CSSharpUtils
+            player.SetArmor(100, fullArmor);
         });
     }
 

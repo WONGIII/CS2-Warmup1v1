@@ -118,6 +118,14 @@
 - CounterStrikeSharp v201+
 - .NET 10.0
 - CS2 服务器
+- [CSSharpUtils](https://github.com/imi-tat0r/CSSharpUtils) (NuGet: `dotnet add package CSSharpUtils`)
+
+## 安装部署
+
+1. 将以下文件放入 `addons/counterstrikesharp/plugins/Warmup1v1/`：
+   - `Warmup1v1.dll`
+   - `Warmup1v1.deps.json`
+   - `CSSharpUtils.dll`（NuGet 依赖）
 
 ## 编译
 
@@ -127,6 +135,12 @@ dotnet build
 ```
 
 dll 输出在 `bin/Debug/net10.0/Warmup1v1.dll`
+
+发布到服务器：
+```bash
+dotnet publish -c Release -o publish
+# 将 publish/ 目录下的 Warmup1v1.dll, Warmup1v1.deps.json, CSSharpUtils.dll 拷贝到服务器插件目录
+```
 
 ## 参考
 

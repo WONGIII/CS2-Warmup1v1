@@ -51,10 +51,7 @@ public class ArenaManager
 
     private string GetArenasPath()
     {
-        // Place arenas.json next to the plugin DLL
-        var dllLoc = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        var dllDir = Path.GetDirectoryName(dllLoc) ?? _plugin.ModuleDirectory;
-        return Path.Combine(dllDir, _plugin.Config.ArenaConfigPath);
+        return Path.Combine(_plugin.ModuleDirectory, _plugin.Config.ArenaConfigPath);
     }
 
     public void LoadArenas()
@@ -107,10 +104,12 @@ public class ArenaManager
 
     public int GetFreeArena()
     {
+        var free = new List<int>();
         for (int i = 0; i < ArenaCount; i++)
             if (!_arenas[i].InUse)
-                return i;
-        return -1;
+                free.Add(i);
+        if (free.Count == 0) return -1;
+        return free[Random.Shared.Next(free.Count)];
     }
 
     public void MarkArenaInUse(int index, bool inUse)

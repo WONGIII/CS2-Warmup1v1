@@ -15,4 +15,7 @@
             <Private>false</Private>
         </Reference>
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="CSSharpUtils" Version="1.0.10" />
+    </ItemGroup>
 </Project>
