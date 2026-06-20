@@ -181,11 +181,14 @@ public class Warmup1v1Plugin : BasePlugin, IPluginConfig<Warmup1v1Config>
         return HookResult.Continue;
     }
 
+    private string _currentMapName = "";
+
     private HookResult OnRoundPrestart(EventRoundPrestart e, GameEventInfo info)
     {
-        // Retry loading arenas if not loaded yet (Server.MapName may not be available during Load)
-        if (ArenaManager.ArenaCount == 0)
+        // Reload arenas when map changes or not loaded yet
+        if (ArenaManager.ArenaCount == 0 || Server.MapName != _currentMapName)
         {
+            _currentMapName = Server.MapName;
             ArenaManager.LoadArenas();
         }
         // Ensure FFA is enabled during warmup (OnTick CheckWarmupState may miss the first detection)
